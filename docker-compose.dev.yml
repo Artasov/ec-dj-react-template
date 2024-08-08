@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   nginx:
     container_name: nginx
@@ -66,28 +68,28 @@ services:
     networks:
       - net
 
-#  rabbitmq:
-#    container_name: rabbitmq
-#    hostname: rabbitmq
-#    build:
-#      context: backend
-#      dockerfile: DockerfileRabbitMQ
-#    ports:
-#      - "5672:5672"
-#      - "15672:15672"
-#    environment:
-#      RABBITMQ_DEFAULT_USER: guest
-#      RABBITMQ_DEFAULT_PASS: guest
-#    volumes:
-#      - ./data/rabbitmq:/var/lib/rabbitmq
-#      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-#    healthcheck:
-#      test: [ "CMD-SHELL", "rabbitmq-diagnostics ping" ]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
-#    networks:
-#      - net
+  #  rabbitmq:
+  #    container_name: rabbitmq
+  #    hostname: rabbitmq
+  #    build:
+  #      context: backend
+  #      dockerfile: DockerfileRabbitMQ
+  #    ports:
+  #      - "5672:5672"
+  #      - "15672:15672"
+  #    environment:
+  #      RABBITMQ_DEFAULT_USER: guest
+  #      RABBITMQ_DEFAULT_PASS: guest
+  #    volumes:
+  #      - ./data/rabbitmq:/var/lib/rabbitmq
+  #      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+  #    healthcheck:
+  #      test: [ "CMD-SHELL", "rabbitmq-diagnostics ping" ]
+  #      interval: 30s
+  #      timeout: 10s
+  #      retries: 5
+  #    networks:
+  #      - net
 
   react:
     container_name: react
@@ -117,15 +119,15 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8000/health_test/ || exit 1" ]
-      interval: 30s
+#      interval: 30s
       timeout: 30s
       retries: 10
       start_period: 5s
     depends_on:
       redis:
         condition: service_healthy
-#      rabbitmq:
-#        condition: service_healthy
+      #      rabbitmq:
+      #        condition: service_healthy
       postgres:
         condition: service_healthy
       minio:
@@ -189,6 +191,7 @@ services:
       timeout: 4s
       retries: 10
       start_period: 5s
+
 networks:
   net:
     driver: bridge
