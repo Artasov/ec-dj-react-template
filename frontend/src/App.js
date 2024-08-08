@@ -7,8 +7,6 @@ import './apps/core/static/css/style.css';
 import './apps/core/static/css/wide-classes.css';
 import './apps/core/static/css/base.css';
 import {AuthProvider} from './apps/core/components/auth/AuthContext';
-import 'react-toastify/dist/ReactToastify.css';
-import './apps/core/static/css/ReactToastify.css';
 
 import SignIn from "./apps/core/pages/auth/SignIn";
 
