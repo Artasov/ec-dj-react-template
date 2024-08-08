@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from apps.core.tasks.test_tasks import test_task
+from utils.djrediser import DjRediser
 
 log = logging.getLogger('console')
 
@@ -20,6 +21,9 @@ def health_test(request) -> Response:
     if not get_redis_connection().flushall():
         log.error('Redis have not yet come to life')
         return Response('Redis error', status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+    print(DjRediser().cache('health_test_cache', lambda: random.randint(1000, 10000)))
+
     try:
         connections['default'].cursor()
     except Exception as e:
