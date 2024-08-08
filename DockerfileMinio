@@ -1,0 +1,21 @@
+# Используем Alpine для промежуточной стадии
+FROM alpine:latest as builder
+
+# Устанавливаем dos2unix
+RUN apk add --no-cache dos2unix
+
+# Копируем и преобразуем скрипт
+COPY entrypoint_minio.sh /opt/entrypoint_minio.sh
+RUN dos2unix /opt/entrypoint_minio.sh && \
+    sed -i 's/\r$//' /opt/entrypoint_minio.sh
+
+# Основной образ MinIO
+FROM minio/minio
+
+# Копируем преобразованный скрипт из промежуточного образа
+COPY --from=builder /opt/entrypoint_minio.sh /opt/entrypoint_minio.sh
+
+# Делаем скрипт исполняемым
+RUN chmod +x /opt/entrypoint_minio.sh
+
+ENTRYPOINT ["sh", "/opt/entrypoint_minio.sh"]

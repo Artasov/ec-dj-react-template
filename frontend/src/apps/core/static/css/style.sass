@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;0,1000;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900;1,1000&display=swap')
+@import "vars"
+
+*
+  -webkit-tap-highlight-color: #fff5 !important
+
+  &::selection
+    background-color: #fff5 !important
+
+.smart-captcha
+  iframe
+    border-radius: 18px
+    opacity: 70%
+
+.login-modal-content
+  min-width: 300px
+  width: min-content
+
+.MuiOutlinedInput-notchedOutline
+  transition: border-color .25s ease
+
+body
+  font-size: 16px
+  font-family: 'Nunito', sans-serif
+  min-height: 100vh
+  max-height: 100vh
+
+.wrapper
+  min-height: 100vh
+  max-height: 100vh
+
+.rotate3dZX-90
+  transform: rotate3d(0, 1, 0, 90deg)
+  transform-origin: center
+
+
+.text-success-1
+  color: rgba(145, 255, 171, 0.85)
+
+.backdrop-saturate-1
+  backdrop-filter: saturate(100%)
+
+.backdrop-saturate-2
+  backdrop-filter: saturate(200%)
+
+.backdrop-saturate-3
+  backdrop-filter: saturate(300%)
+
+.backdrop-saturate-4
+  backdrop-filter: saturate(400%)
+
+.backdrop-saturate-5
+  backdrop-filter: saturate(500%)
+
+.backdrop-saturate-6
+  backdrop-filter: saturate(600%)
+
+#loading_spinner_block
+  position: absolute
+  top: 0
+  left: 0
+  height: 100%
+  width: 100%
+  display: flex
+  flex-direction: column
+  justify-content: center
+
+  #loading_spinner_block-help
+    text-align: center
+    transform: scale(4)
+
+  #loading_spinner
+    z-index: 300
+
+progress
+  border-radius: 7px
+  width: 80%
+  height: 22px
+  box-shadow: 0 0 5px rgba(#000, .7)
+
+progress::-webkit-progress-bar
+  background-color: transparent
+  border-radius: 7px
+
+progress::-webkit-progress-value
+  border-radius: 7px
+  background-color: $primary

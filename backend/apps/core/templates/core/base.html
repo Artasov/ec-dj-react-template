@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru" class="overflow-x-hidden">
+<head>
+    <title>a{% block title %}Онлайн сервис видеоконсультаций с психологом.{% endblock %}</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    {#    <link rel="icon" type="image/png" href="{% static 'Core/img/cat-1-small.png' %}">#}
+    <link href="{% static 'core/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'core/css/wide-classes.css' %}" rel="stylesheet">
+
+    <script defer src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+    <script defer src="{% static 'core/js/classes/Client.js' %}"></script>
+    <script defer src="{% static 'core/js/check_device.js' %}"></script>
+    <script defer type="module" src="{% static 'core/js/initCopyBtns.js' %}"></script>
+    <meta name="description" content="{% block meta_description %}{% endblock %}">
+    <meta property="og:description" content="{% block meta_og_description %}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{% endblock %} it-compot">
+    {# Отключает формирование ссылки у номера телефона на iOS #}
+    <meta name="format-detection" content="telephone=no">
+    {# Автор страницы #}
+    <meta name="Author" content="xlartas">
+    {# Авторские права #}
+    <meta name="Copyright" content="xlartas">
+    {# Адрес автора #}
+    <meta name="Address" content="Russia">
+    {# локализация сайта, для русскоязычного сайта ru_RU #}
+    <meta property="og:locale" content="ru_RU">
+    {# тип контента, по умолчанию используется article #}
+    <meta property="og:type" content="article">
+    {# заголовок страницы, который будет выводиться в записи социальной сети #}
+    <meta property="og:title" content="Life-Help">
+    {# ссылка на изображение, которое будет публиковаться в записи #}
+    {#    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'Core/img/.png' %}">#}
+    {# ссылка на текущую страницу #}
+    <meta property="og:url" content="{{ request.path }}">
+    {# название сайта #}
+    <meta property="og:site_name" content="Life-Help">
+    {# Тип карты, по умолчанию используется summary #}
+    <meta name="twitter:card" content="summary">
+    {# Имя/логин автора #}
+    <meta name="twitter:site" content="Life-Help">
+    {# Название страницы #}
+    <meta name="twitter:title" content="Life-Help">
+    {# Описание страницы #}
+    <meta name="twitter:description" content="{% block meta_twitter_description %}{% endblock %}">
+    {# Ссылка на изображение #}
+    {#    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'Core/img/logo.png' %}">#}
+    <meta id="theme" content="{{ theme }}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body data-bs-theme="{% if theme %}{{ theme }}{% else %}dark{% endif %}" class="overflow-x-hidden">
+<div id="wrapper" class="wrapper fc position-relative overflow-x-hidden">
+    {#{% include 'Core/includes/header.html' %}#}
+    <main class="no-scrollbar fccc flex-grow-1 overflow-x-hidden overflow-y-auto py-3">
+        {% block main %}{% endblock %}
+    </main>
+    {#{% include 'Core/includes/footer.html' %}#}
+</div>
+</body>
+</html>
+
+
