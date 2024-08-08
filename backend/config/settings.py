@@ -21,7 +21,7 @@ HTTPS = bool(int(env('HTTPS')))
 SITE_ID = int(env('SITE_ID'))
 MAIN_DOMAIN = env('MAIN_DOMAIN', '127.0.0.1')
 DOMAIN_URL = f'http{"s" if HTTPS else ""}://{MAIN_DOMAIN}{":8000" if DEV else ""}'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', MAIN_DOMAIN] + env('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web:8000', MAIN_DOMAIN] + env('ALLOWED_HOSTS', '').split(',')
 
 ROOT_URLCONF = 'apps.core.routes.root'
 AUTH_USER_MODEL = 'core.User'
