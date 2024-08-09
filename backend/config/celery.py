@@ -12,15 +12,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 app = Celery('config')
 app.config_from_object('config.settings', namespace='CELERY')
 app.conf.update(
-    # task_always_eager=False,
     worker_concurrency=5,
-    # worker_prefetch_multiplier=1,
-    # task_acks_late=True,
-    # worker_max_tasks_per_child=50,
-    # broker_transport_options={
-    #     'max_retries': 3, 'interval_start': 0,
-    #     'interval_step': 0.5, 'interval_max': 2
-    # },
+    worker_prefetch_multiplier=1,
+    task_acks_late=True,
+    worker_max_tasks_per_child=50,
+    broker_transport_options={
+        'max_retries': 3, 'interval_start': 0,
+        'interval_step': 0.5, 'interval_max': 2
+    },
 )
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
