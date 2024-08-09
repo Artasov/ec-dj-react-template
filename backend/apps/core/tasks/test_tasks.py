@@ -4,8 +4,6 @@ from time import sleep
 from celery import shared_task
 from celery_singleton import Singleton
 
-from config.celery import app
-
 log = logging.getLogger('console')
 
 

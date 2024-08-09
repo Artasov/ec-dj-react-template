@@ -38,7 +38,7 @@ ASGI_APPLICATION = 'config.asgi.application'
 MINIO_USE = bool(int(env('MINIO_USE')))
 POSTGRES_USE = bool(int(env('POSTGRES_USE')))
 
-REDIS_HOST = env('REDIS_HOST')
+REDIS_HOST = env('REDIS_HOST') if not DOCKER else 'redis'
 REDIS_PORT = int(env('REDIS_PORT'))
 REDIS_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
 REDIS_CACHE_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/1'
@@ -63,12 +63,12 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'corsheaders',
 
+    'django_redis',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'polymorphic',
     'django_celery_beat',
-    'django_redis',
     'django_extensions',
 
     'apps.core',
@@ -126,7 +126,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
@@ -244,6 +244,8 @@ result_serializer = 'json'
 task_default_queue = 'default'
 broker_connection_retry_on_startup = True
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_TASK_ALWAYS_EAGER = False
+CELERY_TASK_EAGER_PROPAGATES = True
 
 # Logging configuration
 logs_base_dir = os.path.join(BASE_DIR.parent, 'logs')

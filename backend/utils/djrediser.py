@@ -1,146 +1,105 @@
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta
+from django.core.cache import cache as djc
 
-from django.core.cache import cache
+MIN_1 = 1 * 60
+MIN_5 = 5 * 60
+MIN_10 = 10 * 60
+MIN_15 = 15 * 60
+MIN_20 = 20 * 60
+MIN_25 = 25 * 60
+MIN_30 = 30 * 60
+MIN_40 = 40 * 60
+MIN_50 = 50 * 60
+HOUR_1 = 1 * 60 * 60
+HOUR_2 = 2 * 60 * 60
+HOUR_3 = 3 * 60 * 60
+HOUR_4 = 4 * 60 * 60
+HOUR_5 = 5 * 60 * 60
+HOUR_6 = 6 * 60 * 60
+HOUR_7 = 7 * 60 * 60
+HOUR_8 = 8 * 60 * 60
+HOUR_9 = 9 * 60 * 60
+HOUR_10 = 10 * 60 * 60
+HOUR_11 = 11 * 60 * 60
+HOUR_12 = 12 * 60 * 60
+HOUR_13 = 13 * 60 * 60
+HOUR_14 = 14 * 60 * 60
+HOUR_15 = 15 * 60 * 60
+HOUR_16 = 16 * 60 * 60
+HOUR_17 = 17 * 60 * 60
+HOUR_18 = 18 * 60 * 60
+HOUR_19 = 19 * 60 * 60
+HOUR_20 = 20 * 60 * 60
+HOUR_21 = 21 * 60 * 60
+HOUR_22 = 22 * 60 * 60
+HOUR_23 = 23 * 60 * 60
+DAY_1 = 1 * 60 * 60 * 24
+DAYS_2 = 2 * 60 * 60 * 24
+DAYS_3 = 3 * 60 * 60 * 24
+DAYS_4 = 4 * 60 * 60 * 24
+DAYS_5 = 5 * 60 * 60 * 24
+DAYS_6 = 6 * 60 * 60 * 24
+DAYS_7 = 7 * 60 * 60 * 24
+DAYS_8 = 8 * 60 * 60 * 24
+DAYS_9 = 9 * 60 * 60 * 24
+DAYS_10 = 10 * 60 * 60 * 24
+DAYS_11 = 11 * 60 * 60 * 24
+DAYS_12 = 12 * 60 * 60 * 24
+DAYS_13 = 13 * 60 * 60 * 24
+DAYS_14 = 14 * 60 * 60 * 24
+DAYS_15 = 15 * 60 * 60 * 24
+DAYS_16 = 16 * 60 * 60 * 24
+DAYS_17 = 17 * 60 * 60 * 24
+DAYS_18 = 18 * 60 * 60 * 24
+DAYS_19 = 19 * 60 * 60 * 24
+DAYS_20 = 20 * 60 * 60 * 24
 
 
-class CacheByNameNotFound(Exception):
-    pass
-
-
-class CacheTimeoutExpired(Exception):
+class CacheNotFound(BaseException):
     pass
 
 
 class DjRediser:
-    def __init__(self, default_timeout=86400, auto_delete_expired=True):
+
+    @staticmethod
+    def cache(name, obj=None, timeout=HOUR_12, *args, **kwargs):
         """
-        Initializes the DjRediser instance.
+        Кэширует результат функции или возвращает кэшированный результат, если он доступен.
 
-        @param default_timeout: The default timeout for cache entries in seconds.
-        @param auto_delete_expired: Whether to delete expired cache entries automatically.
+        @param name: Базовое имя кэш-записи.
+        @param obj: Объект или функция для кэширования.
+        @param timeout: Время в секундах до истечения срока действия.
+        @return: Кэшированный результат или результат вызова функции.
         """
-        self.cache = cache
-        self.default_timeout = default_timeout
-        self.auto_delete_expired = auto_delete_expired
-
-    def _get_cache_key(self, name):
-        """
-        Constructs the cache key with the given name.
-
-        @param name: The base name of the cache entry.
-        @return: The full cache key.
-        """
-        return f'{name}'
-
-    def _is_expired(self, timestamp, timeout):
-        """
-        Checks if the cache entry is expired.
-
-        @param timestamp: The timestamp when the cache entry was created.
-        @param timeout: The timeout for the cache entry in seconds.
-        @return: True if the cache entry is expired, False otherwise.
-        """
-        expiration_time = datetime.fromtimestamp(timestamp) + timedelta(seconds=timeout)
-        return datetime.now() >= expiration_time
-
-    def cache(self, name, obj=None, timeout=None, raise_timeout=False, *args, **kwargs):
-        """
-        Caches the result of a function or returns the cached result if available.
-
-        @param name: The base name of the cache entry.
-        @param obj: The object or function to cache.
-        @param timeout: Seconds before expiration.
-        @param raise_timeout: Whether to raise an exception if the cache has expired.
-        @return: The cached result or the result of the function call.
-        """
-        cache_key = self._get_cache_key(name)
-        cached_data = self.cache.get(cache_key)
-
-        if cached_data is not None:
-            timestamp, timeout, result = cached_data
-            if not self._is_expired(timestamp, timeout):
-                return result
-            elif raise_timeout:
-                raise CacheTimeoutExpired(f'Timeout expired for {name}')
-            elif self.auto_delete_expired:
-                self.cache.delete(cache_key)
-
+        if djc.get(name) is not None: return False, djc.get(name)
         if obj is None:
-            raise CacheByNameNotFound(f'No cache found for {name}')
+            raise CacheNotFound(f'No cache found for {name}')
         else:
-            result = None
-            if callable(obj):
-                if asyncio.iscoroutinefunction(obj):
-                    loop = asyncio.get_event_loop()
-                    if loop.is_running():
-                        result = loop.run_until_complete(obj(*args, **kwargs))
-                    else:
-                        result = asyncio.run(obj(*args, **kwargs))
-                else:
-                    with ThreadPoolExecutor() as executor:
-                        result = executor.submit(obj, *args, **kwargs).result()
-            else:
-                result = obj
+            result = obj(*args, **kwargs) if callable(obj) else obj
+            djc.set(name, result, timeout=timeout)
+            return True, result
 
-            timestamp = int(datetime.now().timestamp())
-            timeout = timeout if timeout is not None else self.default_timeout
-            self.cache.set(cache_key, (timestamp, timeout, result))
-            return result
-
-    async def acache(self, name, obj=None, timeout=None, raise_timeout=False, *args, **kwargs):
+    @staticmethod
+    async def acache(name, obj=None, timeout=HOUR_12, *args, **kwargs):
         """
-        Asynchronously caches the result of a function or returns the cached result if available.
+        Асинхронно кэширует результат функции или возвращает кэшированный результат, если он доступен.
 
-        @param name: The base name of the cache entry.
-        @param obj: The object or function to cache.
-        @param timeout: Seconds before expiration.
-        @param raise_timeout: Whether to raise an exception if the cache has expired.
-        @return: The cached result or the result of the function call.
+        @param name: Базовое имя кэш-записи.
+        @param obj: Объект или функция для кэширования.
+        @param timeout: Время в секундах до истечения срока действия.
+        @return: Кэшированный результат или результат вызова функции.
         """
-        cache_key = self._get_cache_key(name)
-        cached_data = self.cache.get(cache_key)
-
-        if cached_data is not None:
-            timestamp, timeout, result = cached_data
-            if not self._is_expired(timestamp, timeout):
-                return result
-            elif raise_timeout:
-                raise CacheTimeoutExpired(f'Timeout expired for {name}')
-            elif self.auto_delete_expired:
-                self.cache.delete(cache_key)
-
+        if djc.get(name) is not None: return False, djc.get(name)
         if obj is None:
-            raise CacheByNameNotFound(f'No cache found for {name}')
+            raise CacheNotFound(f'No cache found for {name}')
         else:
-            result = None
-            if callable(obj):
-                if asyncio.iscoroutinefunction(obj):
-                    result = await obj(*args, **kwargs)
-                else:
-                    with ThreadPoolExecutor() as executor:
-                        loop = asyncio.get_event_loop()
-                        result = await loop.run_in_executor(executor, obj, *args, **kwargs)
-            else:
-                result = obj
+            result = await obj(*args, **kwargs) if callable(obj) else obj
+            djc.set(name, result, timeout=timeout)
+            return True, result
 
-            timestamp = int(datetime.now().timestamp())
-            timeout = timeout if timeout is not None else self.default_timeout
-            self.cache.set(cache_key, (timestamp, timeout, result))
-            return result
+    @staticmethod
+    def delete(name):
+        djc.delete(name)
 
-    def delete(self, name):
-        """
-        Deletes the cache entry for the given name.
-
-        @param name: The base name of the cache entry.
-        """
-        cache_key = self._get_cache_key(name)
-        self.cache.delete(cache_key)
-
-    def delete_all(self):
-        """
-        Deletes all cache entries.
-        """
-        self.cache.clear()
+    @staticmethod
+    def delete_all():
+        djc.clear()
